@@ -28,6 +28,13 @@ public class VkGui extends JFrame {
     JLabel picLabel = new JLabel();
     private Graph graph = new Graph();
     private String inputString;
+    private DragImage dragImage = new DragImage();
+
+
+    static class DragImage{
+        public int x;
+        public int y;
+    }
     static class UserFields{
         private final JLabel namel = new JLabel("Name");
         private final JLabel surnamel = new JLabel("Surname");
@@ -70,11 +77,28 @@ public class VkGui extends JFrame {
         container.add(scrollPane);
         container.add(layeredPane);
     }
+    class mouserMotionListener implements MouseMotionListener{
+        public void mouseDragged(MouseEvent e){
+            int dx = dragImage.x - e.getLocationOnScreen().x;
+            int dy = dragImage.y - e.getLocationOnScreen().y;
+
+            System.out.println(dx);
+            System.out.println(dy);
+            scrollPane.getHorizontalScrollBar().setValue(dx);
+            scrollPane.getVerticalScrollBar().setValue(dy);
+
+            //scrollPane.getHorizontalScrollBar().setValue(dragImage.x - e.getX());
+        }
+        public void mouseMoved(MouseEvent e){
+
+        }
+
+    }
+
     class mouseClickListener implements MouseListener {
         @Override
         public void mouseClicked(MouseEvent e) {
             User user = graph.getUser((int)(e.getX()/panel.zoomFactor),(int)((e.getY()- 100)/panel.zoomFactor) );
-            System.out.println(getX() + " " + getY());
             try {
                 showInfo(user, e.getX(), e.getY());
             } catch (IOException ioException) {
@@ -82,7 +106,8 @@ public class VkGui extends JFrame {
             }
         }
         public void mousePressed(MouseEvent e){
-
+            dragImage.x =  e.getLocationOnScreen().x + scrollPane.getHorizontalScrollBar().getValue();
+            dragImage.y =  e.getLocationOnScreen().y + scrollPane.getVerticalScrollBar().getValue();
         }
         public void mouseReleased(MouseEvent e){
 
@@ -155,7 +180,8 @@ public class VkGui extends JFrame {
                 at.scale(zoomFactor, zoomFactor);
                 zoomed = false;
             }
-            System.out.println(at + "!");
+
+            //System.out.println(at + "!");
             g2.transform(at);
 
             g2.setColor(Color.BLACK);
@@ -167,11 +193,10 @@ public class VkGui extends JFrame {
             }
         }
         public void setZoomFactor(double factor){
-
-            if(factor<this.zoomFactor){
+            if(factor<this.zoomFactor && factor > 0.3){
                 this.zoomFactor=this.zoomFactor/1.1;
             }
-            else{
+            else if(factor>this.zoomFactor && zoomFactor < 3){
                 this.zoomFactor=factor;
             }
             this.zoomed =true;
@@ -209,7 +234,8 @@ public class VkGui extends JFrame {
     public void paintGraph(){
         graph = new Graph(inputString, checkBoxNonFriends.isSelected(), checkBoxOstov.isSelected());
         layeredPane.remove(scrollPane);
-        //panel = new GraphPanel();
+        panel = new GraphPanel();
+        panel.addMouseMotionListener(new mouserMotionListener());
         panel.addMouseListener(new mouseClickListener());
         panel.addMouseWheelListener(e -> {
             if (e.getWheelRotation() < 0) {
@@ -226,7 +252,6 @@ public class VkGui extends JFrame {
             }
             infoPanel.setVisible(false);
         });
-
         scrollPane = new JScrollPane(panel);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
