@@ -60,8 +60,6 @@ public class EdgesContainer {
     public int getLength(){
         return length;
     }
-
-
     public Edge findMaxEdge(User user, UsersContainer ostov){
         Edge maxEdge = new Edge();
         int max = -1;

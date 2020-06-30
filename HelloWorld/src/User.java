@@ -12,7 +12,6 @@ public class User {
         public int x;
         public int y;
     }
-
     public User(String name, String surname, String age, int ID){
         this.name = name;
         this.surname = surname;
@@ -31,8 +30,7 @@ public class User {
         friends = new User[0];
         cords = new User.Cords();
     }
-    public void addFriend(User user)
-    {
+    public void addFriend(User user){
         friendsNumber++;
         User [] newArr = new User [friendsNumber];
         for(int i = 0; i < friends.length; i++)

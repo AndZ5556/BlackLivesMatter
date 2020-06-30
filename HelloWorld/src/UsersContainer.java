@@ -5,9 +5,7 @@ public class UsersContainer {
         length = 0;
         users = new User[0];
     }
-
-    public User addUser(String name, String surname, String age)
-    {
+    public User addUser(String name, String surname, String age){
         User newUser;
         name = name.replaceAll("[^А-Яа-яA-Za-z0-9]", "");
         surname = surname.replaceAll("[^А-Яа-яA-Za-z0-9]", "");
@@ -25,7 +23,6 @@ public class UsersContainer {
         users = newArr;
         return newUser;
     }
-
     public void addUser(User user){
         if(!find(user)){
             length++;
@@ -36,7 +33,6 @@ public class UsersContainer {
             users = newArr;
         }
     }
-
     public User getUser(String name, String surname){
         for(User user : users){
             if(name.equals(user.getName()) && surname.equals(user.getSurname()))
@@ -54,7 +50,6 @@ public class UsersContainer {
         }
         return false;
     }
-
     public void buildUsers(){
         int R = (int)(length * 200 / 2 / Math.PI) * 2;
         for(User user : users){

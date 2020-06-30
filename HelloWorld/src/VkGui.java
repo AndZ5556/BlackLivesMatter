@@ -6,7 +6,7 @@ import java.io.File;
 import java.awt.event.*;
 import java.io.FileReader;
 import java.io.IOException;
-import  javax.swing.*;
+import javax.swing.*;
 
 public class VkGui extends JFrame {
     private final JButton buildButton = new JButton("Build Graph");
@@ -19,31 +19,31 @@ public class VkGui extends JFrame {
     private final JCheckBox checkBoxNonFriends = new JCheckBox("Paint Non Friends",false);
     private final JRadioButton radioButton1 = new JRadioButton("From file");
     private final JRadioButton radioButton2 = new JRadioButton("From keyboard");
-    private JPanel infoPanel = new JPanel();
+    private final JPanel infoPanel = new JPanel();
+    private final JLayeredPane layeredPane = new JLayeredPane();
     private GraphPanel panel = new GraphPanel();
     private JScrollPane scrollPane = new JScrollPane();
     private JScrollPane scrollInfoText = new JScrollPane();
-    private UserFields userFields = new UserFields();
+    private final UserFields userFields = new UserFields();
     JLabel picLabel = new JLabel();
     private Graph graph = new Graph();
+    private String inputString;
+    static class UserFields{
+        private final JLabel namel = new JLabel("Name");
+        private final JLabel surnamel = new JLabel("Surname");
+        private final JLabel agel = new JLabel("Age");
+        private final JLabel friendsl = new JLabel("Friends");
 
-    class UserFields{
-        private JLabel namel = new JLabel("Name");
-        private JLabel surnamel = new JLabel("Surname");
-        private JLabel agel = new JLabel("Age");
-        private JLabel friendsl = new JLabel("Friends");
-
-        private JTextField name = new JTextField();
-        private JTextField surname = new JTextField();
-        private JTextField age = new JTextField();
-        private JTextField friends = new JTextField();
-        private JButton addButton = new JButton();
+        private final JTextField name = new JTextField();
+        private final JTextField surname = new JTextField();
+        private final JTextField age = new JTextField();
+        private final JTextField friends = new JTextField();
     }
 
 
     public VkGui(){
         super("VK visualisation");
-        this.setBounds(100, 100, 1430, 800);
+        this.setBounds(100, 100, 1430, 850);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setAllForms();
 
@@ -67,37 +67,39 @@ public class VkGui extends JFrame {
         container.add(userFields.agel);
         container.add(userFields.friendsl);
         container.add(addButton);
-        //buildGraph();
+        container.add(scrollPane);
+        container.add(layeredPane);
     }
     class mouseClickListener implements MouseListener {
         @Override
         public void mouseClicked(MouseEvent e) {
-            User user = graph.getUser(e.getX(),e.getY());
-            //System.out.println(getX() + " " + getY());
+            User user = graph.getUser((int)(e.getX()/panel.zoomFactor),(int)((e.getY()- 100)/panel.zoomFactor) );
+            System.out.println(getX() + " " + getY());
             try {
-                showInfo(user);
+                showInfo(user, e.getX(), e.getY());
             } catch (IOException ioException) {
                 ioException.printStackTrace();
             }
         }
         public void mousePressed(MouseEvent e){
-            return;
+
         }
         public void mouseReleased(MouseEvent e){
-            return;
+
         }
         public void mouseExited (MouseEvent e) {
-            return;
+
         }
         public void mouseEntered (MouseEvent e){
-            return;
+
         }
-        public void showInfo(User user) throws IOException {
+        public void showInfo(User user, int x, int y) throws IOException {
             infoPanel.remove(scrollInfoText);
             infoPanel.remove(picLabel);
-            panel.remove(infoPanel);
-            SwingUtilities.updateComponentTreeUI(VkGui.this);
+            layeredPane.remove(infoPanel);
+            layeredPane.repaint();
             if(user == null) return;
+            infoPanel.setVisible(true);
             String picture = user.getName() + " " + user.getSurname() + ".png";
             if(new File(picture).exists()){
                 BufferedImage myPicture = ImageIO.read(new File(picture));
@@ -109,18 +111,21 @@ public class VkGui extends JFrame {
                 picLabel.setBounds(0,110, 300, 20);
             }
 
-
-            String text = "Пользователь: " + user.getName() + " " + user.getSurname() + "\nВозраст: " + user.getAge() + "\nДрузья: ";
+            StringBuilder text = new StringBuilder("Пользователь: " + user.getName() + " " + user.getSurname() + "\nВозраст: " + user.getAge() + "\nДрузья: ");
             for(User user1 : user.friends){
-                text += user1.getName() + " " + user1.getSurname();
-                text += ", ";
+                text.append(user1.getName());
+                text.append(" ");
+                text.append(user1.getSurname());
+                text.append(", ");
             }
-            text = text.substring(0, text.length() - 2);
-            JTextArea infoText = new JTextArea(text);
+            String str = text.toString();
+            str = str.substring(0, text.length() - 2);
+            JTextArea infoText = new JTextArea(str);
             infoText.setLineWrap(true);
             infoText.setWrapStyleWord(true);
             infoPanel.setLayout(null);
-            infoPanel.setBounds(user.cords.x+110, user.cords.y, 300, 500);
+            infoPanel.setBounds(x - scrollPane.getHorizontalScrollBar().getValue(),
+                    y - scrollPane.getVerticalScrollBar().getValue(), 300, 500);
             infoText.setBounds(0,10,300,100);
             infoText.setFont(new Font("Dialog", Font.PLAIN, 14));
             scrollInfoText = new JScrollPane(infoText,
@@ -129,26 +134,29 @@ public class VkGui extends JFrame {
             scrollInfoText.setBounds(0,10,300,100);
             infoPanel.add(scrollInfoText);
             infoPanel.add(picLabel);
-            panel.add(infoPanel);
-            SwingUtilities.updateComponentTreeUI(VkGui.this);
+            layeredPane.add(infoPanel, new Integer(10));
+            //SwingUtilities.updateComponentTreeUI(VkGui.this);
+
         }
     }
     class GraphPanel extends JPanel{
         public double zoomFactor = 1;
-        public boolean zoomer = false;
+        public boolean zoomed = true;
         public AffineTransform at;
 
         Graphics2D g2;
         protected void paintComponent(Graphics g){
             super.paintComponent(g);
+            panel.setPreferredSize(new Dimension((int)(graph.size * 3 * panel.zoomFactor),
+                    (int)(graph.size * 3 * panel.zoomFactor)));
             g2=(Graphics2D)g;
-            at = g2.getTransform();
-            if (zoomer == true) {
+            if (zoomed) {
+                at = g2.getTransform();
                 at.scale(zoomFactor, zoomFactor);
-                zoomer = false;
-                g2.transform(at);
+                zoomed = false;
             }
-
+            System.out.println(at + "!");
+            g2.transform(at);
 
             g2.setColor(Color.BLACK);
             for(User user : graph.users.users){
@@ -166,71 +174,118 @@ public class VkGui extends JFrame {
             else{
                 this.zoomFactor=factor;
             }
-            this.zoomer=true;
+            this.zoomed =true;
         }
         public double getZoomFactor() {
             return zoomFactor;
         }
     }
-
     public String readFile(){
-        String text = "";
+        StringBuilder text = new StringBuilder();
         try(FileReader reader = new FileReader("tests.txt"))
         {
             int c;
             while((c = reader.read()) != -1){
-                text += (char) c;
+                text.append ((char) c);
             }
         }
         catch(IOException ex){
 
             System.out.println(ex.getMessage());
         }
-        return  text;
+        return  text.toString();
     }
     public void addUser(String str){
         graph.addUser(str);
         paintGraph();
     }
     public void buildGraph(){
-        String text = radioButton1.isSelected() ? readFile() : input.getText();
-        graph = new Graph(text, checkBoxNonFriends.isSelected(), checkBoxOstov.isSelected());
+        panel.zoomFactor = 1;
+        panel.zoomed = true;
+        inputString = radioButton1.isSelected() ? readFile() : input.getText();
+        infoPanel.setVisible(false);
         paintGraph();
     }
     public void paintGraph(){
-        getContentPane().remove(scrollPane);
-        panel = new GraphPanel();
-
-        panel.setPreferredSize(new Dimension(graph.size * 3, graph.size * 3));
-        System.out.println(panel.getSize());
-        //panel.setBounds(1,95, 1400, 900);
-        panel.setLayout(null);
+        graph = new Graph(inputString, checkBoxNonFriends.isSelected(), checkBoxOstov.isSelected());
+        layeredPane.remove(scrollPane);
+        //panel = new GraphPanel();
         panel.addMouseListener(new mouseClickListener());
-        panel.addMouseWheelListener(new MouseWheelListener() {
-            @Override
-            public void mouseWheelMoved(MouseWheelEvent e) {
-                if (e.getWheelRotation() < 0) {
-                    panel.setZoomFactor(1.1 * panel.getZoomFactor());
-                    panel.revalidate();
-                    panel.repaint();
-                }
-                if (e.getWheelRotation() > 0) {
-                    panel.setZoomFactor(panel.getZoomFactor() / 1.1);
-                    panel.revalidate();
-                    panel.repaint();
-                }
+        panel.addMouseWheelListener(e -> {
+            if (e.getWheelRotation() < 0) {
+                panel.setZoomFactor(1.1 * panel.getZoomFactor());
+                panel.revalidate();
+                panel.repaint();
+                SwingUtilities.updateComponentTreeUI(this);
             }
+            if (e.getWheelRotation() > 0) {
+                panel.setZoomFactor(panel.getZoomFactor() / 1.1);
+                panel.revalidate();
+                panel.repaint();
+                SwingUtilities.updateComponentTreeUI(this);
+            }
+            infoPanel.setVisible(false);
         });
 
         scrollPane = new JScrollPane(panel);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        scrollPane.setBounds(1,95, 1400, 700);
+        scrollPane.setBounds(0,0, 1400, 700);
+        scrollPane.getHorizontalScrollBar().addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
 
-        getContentPane().add(scrollPane);
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                infoPanel.setVisible(false);
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+
+            }
+        });
+        scrollPane.getVerticalScrollBar().addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                infoPanel.setVisible(false);
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+
+            }
+        });
+        layeredPane.add(scrollPane, new Integer(5));
         SwingUtilities.updateComponentTreeUI(this);
     }
-
     public void setAllForms(){
         label1.setBounds(25,45,80,10);
         label2.setBounds(25,57,80,10);
@@ -251,20 +306,18 @@ public class VkGui extends JFrame {
         userFields.agel.setBounds(1040, 45, 100, 12);
         userFields.friendsl.setBounds(1170, 45, 100, 12);
         addButton.setBounds(1300, 60, 100, 20);
+        layeredPane.setBounds(1,95, 1400, 700);
 
         buildButton.addActionListener(e -> buildGraph());
-        addButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String name = userFields.name.getText();
-                String surname = userFields.surname.getText();
-                String friends = userFields.friends.getText();
-                String age = userFields.age.getText();
-                addUser(name + " " + surname + ": " + friends);
-            }
+        addButton.addActionListener(e -> {
+            String name = userFields.name.getText();
+            String surname = userFields.surname.getText();
+            String friends = userFields.friends.getText();
+            String age = userFields.age.getText();
+            addUser(name + " " + surname + " " + age + ": " + friends);
         });
-        checkBoxOstov.addActionListener(e -> buildGraph());
-        checkBoxNonFriends.addActionListener(e -> buildGraph());
+        checkBoxOstov.addActionListener(e -> paintGraph());
+        checkBoxNonFriends.addActionListener(e -> paintGraph());
         radioButton1.addActionListener(e -> {
             input.setEnabled(false);
             input.setBackground(Color.LIGHT_GRAY);
@@ -273,6 +326,7 @@ public class VkGui extends JFrame {
             input.setEnabled(true);
             input.setBackground(Color.WHITE);
         });
+
 
         ButtonGroup group = new ButtonGroup();
         group.add(radioButton1);

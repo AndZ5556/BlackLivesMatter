@@ -15,7 +15,6 @@ public class Edge {
         public int xText;
         public int yText;
     }
-
     public Edge(User u1, User u2, boolean isFrieds){
         this.isInOstov = false;
         this.isFrieds = isFrieds;
@@ -24,7 +23,6 @@ public class Edge {
         weight = 0;
         cords = new Cords();
     }
-
     public Edge(){
         user1 = new User();
         user2 = new User();
@@ -33,12 +31,10 @@ public class Edge {
         weight = -1;
         cords = new Cords();
     }
-
     public boolean equals(Edge edge){
         return ((this.user1.equals(edge.user1)  && this.user2.equals(edge.user2))
                 || (this.user2.equals(edge.user1) && this.user1.equals(edge.user2)));
     }
-
     public void drawEdge(Graphics2D g2){
         if(!isFrieds) {
             float[] dashl = {5,5};
@@ -56,7 +52,6 @@ public class Edge {
         g2.drawLine(cords.x1, cords.y1, cords.x2, cords.y2);
         g2.drawString(Integer.toString(weight), cords.xText, cords.yText);
     }
-
     public User connectWith(User user){
         if(user.equals(user1))
             return user2;
