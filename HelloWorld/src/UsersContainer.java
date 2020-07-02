@@ -7,28 +7,26 @@ public class UsersContainer {
     }
     public User addUser(String name, String surname, String age){
         User newUser;
-        name = name.replaceAll("[^А-Яа-яA-Za-z0-9]", "");
-        surname = surname.replaceAll("[^А-Яа-яA-Za-z0-9]", "");
+        name = name.replaceAll("[^А-Яа-яA-Za-z]", "");
+        surname = surname.replaceAll("[^А-Яа-яA-Za-z]", "");
         if((newUser = getUser(name, surname)) != null){
-            if(newUser.getAge() == "") newUser.setAge(age);
+            if(newUser.getAge().equals("")) newUser.setAge(age);
             return newUser;
         }
 
         newUser = new User(name, surname, age, length);
         length++;
         User [] newArr = new User [length];
-        for(int i = 0; i < users.length; i++)
-            newArr[i] = users[i];
+        System.arraycopy(users, 0, newArr, 0, users.length);
         newArr[length - 1] = newUser;
         users = newArr;
         return newUser;
     }
     public void addUser(User user){
-        if(!find(user)){
+        if(notInContainer(user)){
             length++;
             User [] newArr = new User [length];
-            for(int i = 0; i < users.length; i++)
-                newArr[i] = users[i];
+            System.arraycopy(users, 0, newArr, 0, users.length);
             newArr[length - 1] = user;
             users = newArr;
         }
@@ -43,12 +41,12 @@ public class UsersContainer {
     public int getLength(){
         return length;
     }
-    public boolean find(User user){
-        for(int i = 0; i < length; i++){
-            if(user.equals(users[i]))
-                return true;
+    public boolean notInContainer(User user){
+        for(User curr : users){
+            if(user.equals(curr))
+                return false;
         }
-        return false;
+        return true;
     }
     public void buildUsers(){
         int R = (int)(length * 200 / 2 / Math.PI) * 2;

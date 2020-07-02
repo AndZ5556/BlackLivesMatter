@@ -1,25 +1,25 @@
 public class Graph {
     public UsersContainer users;
     public EdgesContainer edges;
-    private boolean nonFriends;
-    private boolean ostov;
+    private final boolean nonFriends;
+    private final boolean spanningTree;
     public int size;
 
     public Graph(){
         users = new UsersContainer();
         edges = new EdgesContainer();
         nonFriends = true;
-        ostov = true;
+        spanningTree = true;
     }
-    public Graph(String text, boolean nonFriends, boolean ostov){
+    public Graph(String text, boolean nonFriends, boolean spanningTree) throws MyExceptions {
         users = new UsersContainer();
         edges = new EdgesContainer();
         this.nonFriends = nonFriends;
-        this.ostov = ostov;
+        this.spanningTree = spanningTree;
         processText(text);
         buildGraph();
     }
-    public void addUser(String str){
+    public void addUser(String str) throws MyExceptions {
         addUserInfo(str);
         buildGraph();
     }
@@ -37,7 +37,7 @@ public class Graph {
         size = edges.buildEdges(users.getLength());
         edges.buildWeights();
         users.buildUsers();
-        if(ostov)
+        if(spanningTree)
             buildOstov();
     }
     private void addNonFriends(){
@@ -47,30 +47,63 @@ public class Graph {
             }
         }
     }
-    private void addUserInfo(String str){
-        if(str == "") return;
+    public static boolean isNumeric(String strNum) {
+        try {
+            Double.parseDouble(strNum);
+        } catch (NumberFormatException | NullPointerException nfe) {
+            return false;
+        }
+        return true;
+    }
+    private void addUserInfo(String str) throws MyExceptions {
+        if(str.equals("")) return;
         String [] userAndFriends = str.split(":");
         if(userAndFriends.length < 2) return;
         String [] userName = userAndFriends[0].split(" ");
+        if (userName.length < 3 && (isNumeric(userName[0]) || isNumeric(userName[1]))){
+            throw new MyExceptions("Некорректные входные данные: отстутствие имени или фамилии пользователя " + userName[0] + " " + userName[1]);
+        }
         User user = userName.length < 3 ? users.addUser(userName[0], userName[1], "")
                 : users.addUser(userName[0], userName[1], userName[2]);
         String [] friends = userAndFriends[1].split(",");
         User [] userFriends = new User[friends.length];
         for(int i = 0, j = 0; i < userFriends.length; i++){
-            if(friends[i].replaceAll("[^А-Яа-яA-Za-z0-9]", "").length() < 1) continue;
+            if(friends[i].replaceAll("[^А-Яа-яA-Za-z]", "").length() < 1) continue;
             String [] friend = friends[i].split(" ");
+            if (friend.length < 3){
+                throw new MyExceptions("Некорректные входные данные: отстутствие имени или фамилии " + (i+1) + "-го друга пользователя " + userName[0] + " " + userName[1]);
+            }
             while (friend[j].length() < 1) j++;
             String name = friend[j]; j++;
             while (friend[j].length() < 1) j++;
-            String surname = friend[j]; j++;
+            String surname = friend[j];
             User newFriend = users.addUser(name, surname, "");
-            user.addFriend(newFriend);
+            boolean isFriend2Exist = false;
+            for (int k = 0; k < user.friendsNumber; k++){
+                if (user.friends[k].getName().equals(newFriend.getName()) && user.friends[k].getSurname().equals(newFriend.getSurname())){
+                    isFriend2Exist = true;
+                    break;
+                }
+            }
+            if (!isFriend2Exist) {
+                user.addFriend(newFriend);
+            }
+            boolean isFriend1Exist = false;
+            for (int k = 0; k < newFriend.friendsNumber; k++){
+                if (newFriend.friends[k].getName().equals(user.getName()) && newFriend.friends[k].getSurname().equals(user.getSurname())){
+                    isFriend1Exist = true;
+                    break;
+                }
+            }
+            if (!isFriend1Exist){
+                newFriend.addFriend(user);
+            }
             edges.addEdge(user, newFriend, true);
             j = 0;
         }
 
     }
-    private void processText(String text){
+    private void processText(String text) throws MyExceptions {
         String [] strings = text.split("\n");
         for(String str : strings){
             addUserInfo(str);
@@ -93,7 +126,7 @@ public class Graph {
                 }
             }
             if(max == -1) break;
-            maxEdge.isInOstov = true;
+            maxEdge.isInSpanningTree = true;
             ostovUsers.addUser(maxUser);
         }
     }
