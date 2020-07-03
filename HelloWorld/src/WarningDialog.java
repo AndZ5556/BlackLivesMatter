@@ -1,6 +1,6 @@
 import javax.swing.*;
 
-class WarningDialog extends JDialog {
+public class WarningDialog extends JDialog {
     public WarningDialog(java.awt.Frame owner, String title, boolean modal, Exception e){
         super(owner, title, modal);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);

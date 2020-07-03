@@ -15,9 +15,9 @@ public class Edge {
         public int xText;
         public int yText;
     }
-    public Edge(User u1, User u2, boolean isFriends){
+    public Edge(User u1, User u2){
         this.isInSpanningTree = false;
-        this.isFriends = isFriends;
+        this.isFriends = u1.areFriends(u2);
         user1 = u1;
         user2 = u2;
         weight = 0;

@@ -26,6 +26,7 @@ public class HelpPanel extends JFrame {
                 "4)If you forgot somebody, you can add him or her by using field in right upper corner\n" +
                 "5)Now you can see nearly everything but if you want to go further press PAINT OSTOV\n" +
                 "6)Your life has changed forever");
+        info.setEnabled(false);
         info.setLineWrap(true);
         info.setWrapStyleWord(true);
         info.setFont(new Font("Dialog", Font.PLAIN, 14));
