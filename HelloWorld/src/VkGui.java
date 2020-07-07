@@ -11,7 +11,7 @@ public class VkGui extends JFrame {
     private final JButton addButton = new JButton("Add user");
     private final JTextArea input = new JTextArea("97024294 159298559 135927919 136837918 139048410");
     private final JLabel label1 = new JLabel("Input all users'");
-    private final JLabel label2 = new JLabel(" information:");
+    private final JLabel label2 = new JLabel(" IDs:");
     private final JCheckBox checkBoxSpanningTree = new JCheckBox("Spanning Tree",false);
     private final JCheckBox checkBoxNonFriends = new JCheckBox("Consider Non Friends",false);
     private final JRadioButton radioButton1 = new JRadioButton("From file");
@@ -95,7 +95,7 @@ public class VkGui extends JFrame {
     private void setAllFormsBounds(){
         infoButton.setBounds(1300, 5, 100, 50);
         label1.setBounds(25,45,80,10);
-        label2.setBounds(25,57,80,10);
+        label2.setBounds(50,57,80,10);
         input.setBounds(110,30,450,50);
         buildButton.setBounds(580,30,100,50);
         checkBoxNonFriends.setBounds(120,5,130,20);

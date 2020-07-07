@@ -4,6 +4,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.StringJoiner;
 
 public class User {
     private final String name;
@@ -14,6 +15,7 @@ public class User {
     private final String photo;
     public int friendsNumber;
     public String [] friends;
+    public String friendsList;
     public User.Cords cords = new Cords();
     public static class Cords{
         public int x;
@@ -68,6 +70,43 @@ public class User {
             e.printStackTrace();
         }
         return line.split("\\[")[1].split("]")[0].split(",");
+    }
+    static public String getUserFriendsList(String VkID){
+        StringBuilder text = new StringBuilder();
+        try(FileReader reader = new FileReader(".idea/secret.txt"))
+        {
+            int c;
+            while((c = reader.read()) != -1){
+                text.append ((char) c);
+            }
+        }
+        catch(IOException ex){
+            System.out.println(ex.getMessage());
+        }
+        String TOKEN = text.toString();
+        String url = "https://api.vk.com/method/" +
+                "friends.get" +
+                "?user_id=" + VkID +
+                "&access_token=" + TOKEN +
+                "&fields=first_name,last_name"+
+                "&v=5.52";
+        String line = "";
+        try {
+            URL url2 = new URL(url);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(url2.openStream()));
+            line = reader.readLine();
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        line = line.replaceAll("\\d","").replaceAll("\\[]", "");
+        StringJoiner join = new StringJoiner(", ");
+        String [] friendsInfo = line.split("\\[")[1].split("]")[0].split("},\\{");
+        for(String str : friendsInfo){
+            str = str.split("\"")[5] + " " + str.split("\"")[9];
+            join.add(str);
+        }
+        return join.toString();
     }
     static public String [] getUserInfo(String VkID) throws MyExceptions {
         StringBuilder text = new StringBuilder();

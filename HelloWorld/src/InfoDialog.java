@@ -9,7 +9,7 @@ public class InfoDialog extends JFrame {
         infoText.setLineWrap(true);
         infoText.setWrapStyleWord(true);
         infoText.setFont(new Font("Dialog", Font.PLAIN, 14));
-        infoText.setEnabled(false);
+        infoText.setEditable(false);
         JScrollPane scrollInfoText = new JScrollPane(infoText,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
