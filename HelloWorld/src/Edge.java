@@ -15,9 +15,9 @@ public class Edge {
         public int xText;
         public int yText;
     }
-    public Edge(User u1, User u2, boolean isFriends){
+    public Edge(User u1, User u2){
         this.isInSpanningTree = false;
-        this.isFriends = isFriends;
+        this.isFriends = u1.areFriends(u2);
         user1 = u1;
         user2 = u2;
         weight = 0;
@@ -38,11 +38,11 @@ public class Edge {
     public void drawEdge(Graphics2D g2){
         if(!isFriends) {
             float[] dashl = {5,5};
-            BasicStroke pen = new BasicStroke(1,BasicStroke.CAP_ROUND,BasicStroke.JOIN_BEVEL,10, dashl,0);
+            BasicStroke pen = new BasicStroke(3,BasicStroke.CAP_ROUND,BasicStroke.JOIN_BEVEL,10, dashl,0);
             g2.setStroke(pen);
         }
         else {
-            BasicStroke pen = new BasicStroke(1,BasicStroke.CAP_ROUND,BasicStroke.JOIN_BEVEL,0);
+            BasicStroke pen = new BasicStroke(3,BasicStroke.CAP_ROUND,BasicStroke.JOIN_BEVEL,0);
             g2.setStroke(pen);
         }
         if(isInSpanningTree)
@@ -50,6 +50,7 @@ public class Edge {
         else
             g2.setColor(Color.BLACK);
         g2.drawLine(cords.x1, cords.y1, cords.x2, cords.y2);
+        g2.setFont(new Font("Dialog", Font.PLAIN, 16));
         g2.drawString(Integer.toString(weight), cords.xText, cords.yText);
     }
     public User connectWith(User user){

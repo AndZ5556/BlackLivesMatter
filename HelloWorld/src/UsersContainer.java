@@ -5,22 +5,14 @@ public class UsersContainer {
         length = 0;
         users = new User[0];
     }
-    public User addUser(String name, String surname, String age){
-        User newUser;
-        name = name.replaceAll("[^А-Яа-яA-Za-z]", "");
-        surname = surname.replaceAll("[^А-Яа-яA-Za-z]", "");
-        if((newUser = getUser(name, surname)) != null){
-            if(newUser.getAge().equals("")) newUser.setAge(age);
-            return newUser;
+    public void addUser(String VkID) throws MyExceptions {
+        if(notInContainer(VkID)){
+            length++;
+            User [] newArr = new User [length];
+            System.arraycopy(users, 0, newArr, 0, users.length);
+            newArr[length - 1] = new User(VkID, length);
+            users = newArr;
         }
-
-        newUser = new User(name, surname, age, length);
-        length++;
-        User [] newArr = new User [length];
-        System.arraycopy(users, 0, newArr, 0, users.length);
-        newArr[length - 1] = newUser;
-        users = newArr;
-        return newUser;
     }
     public void addUser(User user){
         if(notInContainer(user)){
@@ -31,19 +23,19 @@ public class UsersContainer {
             users = newArr;
         }
     }
-    public User getUser(String name, String surname){
-        for(User user : users){
-            if(name.equals(user.getName()) && surname.equals(user.getSurname()))
-                return user;
-        }
-        return null;
-    }
     public int getLength(){
         return length;
     }
     public boolean notInContainer(User user){
         for(User curr : users){
             if(user.equals(curr))
+                return false;
+        }
+        return true;
+    }
+    public boolean notInContainer(String VkID){
+        for(User curr : users){
+            if(curr.VkID.equals(VkID))
                 return false;
         }
         return true;

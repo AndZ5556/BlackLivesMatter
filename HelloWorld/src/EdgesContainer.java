@@ -5,8 +5,8 @@ public class EdgesContainer {
         length = 0;
         edges = new Edge[0];
     }
-    public void addEdge(User u1, User u2, boolean isFriends){
-        Edge newEdge = new Edge(u1, u2, isFriends);
+    public void addEdge(User u1, User u2){
+        Edge newEdge = new Edge(u1, u2);
         if(find(newEdge))
             return;
         length++;
@@ -36,6 +36,7 @@ public class EdgesContainer {
     }
     public void buildWeights(){
         for(Edge edge : edges){
+            edge.weight = 0;
             for(int i = 0; i < edge.user1.friendsNumber; i++){
                 for(int j = 0; j < edge.user2.friendsNumber; j++){
                     if(edge.user1.friends[i].equals(edge.user2.friends[j])){
@@ -45,12 +46,13 @@ public class EdgesContainer {
             }
         }
     }
-    public Edge findMaxEdge(User user, UsersContainer ostov){
+    public Edge findMaxEdge(User user, UsersContainer spanningTree, boolean nonFriends){
         Edge maxEdge = new Edge();
         int max = -1;
         for(Edge edge : edges){
-            if((edge.user1.equals(user) && edge.weight > max && ostov.notInContainer(edge.user2))
-            || (edge.user2.equals(user) && edge.weight > max && ostov.notInContainer(edge.user1))){
+            if(!nonFriends && !edge.isFriends) continue;
+            if((edge.user1.equals(user) && edge.weight > max && spanningTree.notInContainer(edge.user2))
+            || (edge.user2.equals(user) && edge.weight > max && spanningTree.notInContainer(edge.user1))){
                 max = edge.weight;
                 maxEdge = edge;
             }

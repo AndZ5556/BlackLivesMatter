@@ -7,7 +7,7 @@ import java.io.IOException;
 
 public class HelpPanel extends JFrame {
     HelpPanel(){
-        super("INFO");
+        super("HELP");
         this.setBounds(700,200, 500, 700);
         this.setVisible(true);
         this.setLayout(null);
@@ -21,11 +21,12 @@ public class HelpPanel extends JFrame {
                 "If you are ready to touch your fragile little inner world, read the instruction below.\n\n" +
                 "1)Choose input method(from file or from keyboard)\n" +
                 "2)Input data about Social Network users in such form" +
-                "\tNAME SURNAME AGE: FRIEND1_NAME FRIEND1_SURNAME, FRIEND2_NAME ...\n" +
+                "\tID1 ID2 ID3 ...\n" +
                 "3)Press button BUILD GRAPH\n" +
                 "4)If you forgot somebody, you can add him or her by using field in right upper corner\n" +
-                "5)Now you can see nearly everything but if you want to go further press PAINT OSTOV\n" +
+                "5)Now you can see nearly everything but if you want to go further press PAINT SPANNING TREE\n" +
                 "6)Your life has changed forever");
+        info.setEditable(false);
         info.setLineWrap(true);
         info.setWrapStyleWord(true);
         info.setFont(new Font("Dialog", Font.PLAIN, 14));
