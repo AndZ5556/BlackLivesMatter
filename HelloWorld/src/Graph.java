@@ -58,7 +58,7 @@ public class Graph {
     }
 
 
-    private void processText(String text) throws MyExceptions {
+    public void processText(String text) throws MyExceptions {
         if (text == null) return;
         String[] strings = text.split(" ");
         for (String str : strings) {

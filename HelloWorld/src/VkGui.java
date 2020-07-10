@@ -1,6 +1,7 @@
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import javax.swing.*;
@@ -9,7 +10,7 @@ public class VkGui extends JFrame {
     private final JButton buildButton = new JButton("Build Graph");
     private final JButton infoButton = new JButton("HELP");
     private final JButton addButton = new JButton("Add user");
-    private final JTextArea input = new JTextArea("97024294 159298559 135927919 136837918 139048410");
+    private final JTextArea input = new JTextArea();
     private final JLabel label1 = new JLabel("Input all users'");
     private final JLabel label2 = new JLabel(" IDs:");
     private final JCheckBox checkBoxSpanningTree = new JCheckBox("Spanning Tree", false);
@@ -20,6 +21,7 @@ public class VkGui extends JFrame {
     private final GraphPanel graphPanel = new GraphPanel();
     private final JTextField newUser = new JTextField();
     private final JLabel newUserLabel = new JLabel("Input User ID");
+    private final JFileChooser chosenFile = new JFileChooser();
     private String inputString = "";
 
 
@@ -27,20 +29,22 @@ public class VkGui extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             inputString = radioButton1.isSelected() ? readFile() : input.getText();
+            inputString = inputString.replaceAll("[^0-9 ]", "");
             graphPanel.build(VkGui.this, inputString, checkBoxNonFriends.isSelected(), checkBoxSpanningTree.isSelected());
-            UsersList.update(VkGui.this, inputString);
+
         }
 
         private String readFile() {
             StringBuilder text = new StringBuilder();
-            try (FileReader reader = new FileReader("tests.txt")) {
+            try (FileReader reader = new FileReader(fileDialog())) {
                 int c;
                 while ((c = reader.read()) != -1) {
                     text.append((char) c);
                 }
             } catch (IOException ex) {
-
                 System.out.println(ex.getMessage());
+            } catch (NullPointerException ex) {
+                return "";
             }
             return text.toString();
         }
@@ -127,6 +131,14 @@ public class VkGui extends JFrame {
         container.add(addButton);
         container.add(infoButton);
         container.add(layeredPane);
+    }
+
+    private File fileDialog() {
+        int returnVal = chosenFile.showDialog(this, "Открыть файл");
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            return chosenFile.getSelectedFile();
+        }
+        return null;
     }
 
     @Override

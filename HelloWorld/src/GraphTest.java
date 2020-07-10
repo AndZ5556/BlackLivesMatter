@@ -1,7 +1,4 @@
-import static org.junit.jupiter.api.Assertions.*;
-
 class GraphTest {
-
     @org.junit.jupiter.api.Test
     void addUser() {
         try {
@@ -11,8 +8,9 @@ class GraphTest {
             System.out.println("OK");
         }
     }
+
     @org.junit.jupiter.api.Test
-    void processText(){
+    void processText() {
         try {
             Graph graph = new Graph();
             graph.processText("234fwe133");

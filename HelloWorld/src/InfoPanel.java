@@ -49,7 +49,10 @@ public class InfoPanel extends JPanel {
                     + " " + userInfo[1] + "\nBirthday: " + userInfo[2]
                     + "\nNumber of friends: ";
             String friends = User.getUserFriendsList(VkID);
-            str += friends.split(",").length + "\nFriends: " + friends;
+            if (friends.split(",").length > 1)
+                str += friends.split(",").length + "\nFriends: " + friends;
+            else
+                str += "UNKNOWN" + "\nFriends: " + friends;
             JTextArea infoText = new JTextArea(str);
             infoText.setLineWrap(true);
             infoText.setWrapStyleWord(true);
@@ -63,7 +66,5 @@ public class InfoPanel extends JPanel {
         } catch (MyExceptions myExceptions) {
             myExceptions.printStackTrace();
         }
-
-
     }
 }

@@ -175,6 +175,7 @@ public class GraphPanel {
             });
             saveButton.setBounds(1183, 633, 100, 50);
             layeredPane.add(saveButton, new Integer(100));
+            UsersList.update(frame, inputString);
         } catch (MyExceptions myEx) {
             new WarningDialog(frame, "Ошибка", true, myEx);
         }

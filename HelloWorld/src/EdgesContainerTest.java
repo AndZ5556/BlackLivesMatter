@@ -3,10 +3,9 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class EdgesContainerTest {
-
     @Test
     void addEdge() {
-        try{
+        try {
             User u1 = new User("135927919", 2);
             User u2 = new User("237044688", 1);
             u1.friends[0] = "237044688";
@@ -16,15 +15,14 @@ class EdgesContainerTest {
             Edge edge = new Edge(u1, u2);
             System.out.println("OK");
             assertTrue(edges.find(edge));
-        }
-        catch(MyExceptions ex){
+        } catch (MyExceptions ex) {
             System.out.println("Not OK, data was correct");
         }
     }
 
     @Test
     void buildWeights() {
-        try{
+        try {
             User u1 = new User("135927919", 2);
             User u2 = new User("237044688", 1);
             User u3 = new User("633549608", 3);
@@ -35,23 +33,21 @@ class EdgesContainerTest {
             EdgesContainer edges = new EdgesContainer();
             edges.addEdge(u1, u2);
             edges.buildWeights();
-            if (edges.edges[0].weight == 1){
+            if (edges.edges[0].weight == 1) {
                 System.out.println("OK");
                 assertTrue(true);
-            }
-            else {
+            } else {
                 System.out.println("Not OK");
             }
 
-        }
-        catch(MyExceptions ex){
+        } catch (MyExceptions ex) {
             System.out.println("Not OK, data was correct");
         }
     }
 
     @Test
     void findMaxEdge() {
-        try{
+        try {
             User u1 = new User("135927919", 2);
             User u2 = new User("237044688", 1);
             User u3 = new User("633549608", 3);
@@ -77,16 +73,14 @@ class EdgesContainerTest {
             edges.addEdge(u1, u3);
             edges.addEdge(u2, u3);
             edges.buildWeights();
-            if (edges.findMaxEdge(u1, users, true).weight == 2){
+            if (edges.findMaxEdge(u1, users, true).weight == 2) {
                 System.out.println("OK");
                 assertTrue(true);
-            }
-            else {
+            } else {
                 System.out.println("Not OK");
             }
 
-        }
-        catch(MyExceptions ex){
+        } catch (MyExceptions ex) {
             System.out.println("Not OK, data was correct");
         }
     }
