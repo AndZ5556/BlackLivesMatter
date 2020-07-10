@@ -6,9 +6,9 @@ import java.io.File;
 import java.io.IOException;
 
 public class HelpPanel extends JFrame {
-    HelpPanel(){
+    HelpPanel() {
         super("HELP");
-        this.setBounds(700,200, 500, 700);
+        this.setBounds(700, 200, 500, 700);
         this.setVisible(true);
         this.setLayout(null);
         JTextArea info = new JTextArea();
@@ -30,14 +30,14 @@ public class HelpPanel extends JFrame {
         info.setLineWrap(true);
         info.setWrapStyleWord(true);
         info.setFont(new Font("Dialog", Font.PLAIN, 14));
-        JScrollPane scrollPane = new JScrollPane(info, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        JScrollPane scrollPane = new JScrollPane(info, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setBounds(0, 0, 485, 300);
 
         try {
             BufferedImage myPicture = ImageIO.read(new File("Power.png"));
-            Image image = myPicture.getScaledInstance(400,400, 300);
+            Image image = myPicture.getScaledInstance(400, 400, 300);
             picture = new JLabel(new ImageIcon(image));
-            picture.setBounds(45,300, 400, 400);
+            picture.setBounds(45, 300, 400, 400);
         } catch (IOException e) {
             e.printStackTrace();
         }
