@@ -2,7 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class InfoDialog extends JFrame {
-    public InfoDialog(String title, String message, int x, int y,  int width, int height){
+    public InfoDialog(String title, String message, int x, int y, int width, int height) {
         super(title);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         JTextArea infoText = new JTextArea(message);
@@ -13,13 +13,14 @@ public class InfoDialog extends JFrame {
         JScrollPane scrollInfoText = new JScrollPane(infoText,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        scrollInfoText.setBounds(0,0,width-15,height-40);
+        scrollInfoText.setBounds(0, 0, width - 15, height - 40);
         add(scrollInfoText);
         setVisible(true);
         setAlwaysOnTop(true);
         this.setBounds(x, y, width, height);
     }
-    public InfoDialog(String VkID, int x, int y,  int width, int height){
+
+    public InfoDialog(String VkID, int x, int y, int width, int height) {
         super("User Info");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         add(new InfoPanel(VkID, x, y, new JScrollPane()));
@@ -27,7 +28,8 @@ public class InfoDialog extends JFrame {
         setAlwaysOnTop(true);
         this.setBounds(x, y, width, height);
     }
-    public InfoDialog(){
+
+    public InfoDialog() {
         super();
     }
 }
