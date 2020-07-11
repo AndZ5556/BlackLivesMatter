@@ -1,6 +1,7 @@
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import javax.swing.*;
@@ -9,67 +10,72 @@ public class VkGui extends JFrame {
     private final JButton buildButton = new JButton("Build Graph");
     private final JButton infoButton = new JButton("HELP");
     private final JButton addButton = new JButton("Add user");
-    private final JTextArea input = new JTextArea("97024294 159298559 135927919 136837918 139048410");
+    private final JTextArea input = new JTextArea();
     private final JLabel label1 = new JLabel("Input all users'");
     private final JLabel label2 = new JLabel(" IDs:");
-    private final JCheckBox checkBoxSpanningTree = new JCheckBox("Spanning Tree",false);
-    private final JCheckBox checkBoxNonFriends = new JCheckBox("Consider Non Friends",false);
+    private final JCheckBox checkBoxSpanningTree = new JCheckBox("Spanning Tree", false);
+    private final JCheckBox checkBoxNonFriends = new JCheckBox("Consider Non Friends", false);
     private final JRadioButton radioButton1 = new JRadioButton("From file");
     private final JRadioButton radioButton2 = new JRadioButton("From keyboard");
     private final JLayeredPane layeredPane = new JLayeredPane();
     private final GraphPanel graphPanel = new GraphPanel();
     private final JTextField newUser = new JTextField();
     private final JLabel newUserLabel = new JLabel("Input User ID");
+    private final JFileChooser chosenFile = new JFileChooser();
+    private String inputString = "";
 
-    private String inputString;
 
-
-    class BuildButtonActionListener implements ActionListener{
+    class BuildButtonActionListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             inputString = radioButton1.isSelected() ? readFile() : input.getText();
+            inputString = inputString.replaceAll("[^0-9 ]", "");
             graphPanel.build(VkGui.this, inputString, checkBoxNonFriends.isSelected(), checkBoxSpanningTree.isSelected());
+            newUser.setEditable(true);
         }
-        private String readFile(){
-            StringBuilder text = new StringBuilder();
-            try(FileReader reader = new FileReader("tests.txt"))
-            {
-                int c;
-                while((c = reader.read()) != -1){
-                    text.append ((char) c);
-                }
-            }
-            catch(IOException ex){
 
+        private String readFile() {
+            StringBuilder text = new StringBuilder();
+            try (FileReader reader = new FileReader(fileDialog())) {
+                int c;
+                while ((c = reader.read()) != -1) {
+                    text.append((char) c);
+                }
+            } catch (IOException ex) {
                 System.out.println(ex.getMessage());
+            } catch (NullPointerException ex) {
+                return "";
             }
-            return  text.toString();
+            return text.toString();
         }
     }
-    class AddButtonActionListener implements ActionListener{
+
+    class AddButtonActionListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             String id = newUser.getText();
-            if (id.length() == 0){
+            if (id.length() == 0) {
                 new WarningDialog(VkGui.this, "Ошибка", true, "Введите ID");
                 return;
             }
             graphPanel.addUser(id);
-            SwingUtilities.updateComponentTreeUI(VkGui.this);
-            //graphPanel.build(VkGui.this, inputString, checkBoxNonFriends.isSelected(), checkBoxSpanningTree.isSelected());
+            inputString += " " + id;
+            UsersList.update(VkGui.this, inputString);
         }
     }
 
-    public VkGui(){
+    public VkGui() {
         super("VK visualisation");
         this.setBounds(100, 100, 1430, 850);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        UsersList.update(VkGui.this, inputString);
         setAllFormsBounds();
         setAllButtonsAndCheckBoxes();
         addAllForms();
         new HelpPanel();
     }
-    private void setAllButtonsAndCheckBoxes(){
+
+    private void setAllButtonsAndCheckBoxes() {
         buildButton.addActionListener(new BuildButtonActionListener());
         addButton.addActionListener(new AddButtonActionListener());
         infoButton.addActionListener(e -> new HelpPanel());
@@ -92,23 +98,25 @@ public class VkGui extends JFrame {
         checkBoxSpanningTree.setSelected(true);
         checkBoxNonFriends.setSelected(true);
     }
-    private void setAllFormsBounds(){
+
+    private void setAllFormsBounds() {
         infoButton.setBounds(1300, 5, 100, 50);
-        label1.setBounds(25,45,80,10);
-        label2.setBounds(50,57,80,10);
-        input.setBounds(110,30,450,50);
-        buildButton.setBounds(580,30,100,50);
-        checkBoxNonFriends.setBounds(120,5,130,20);
-        checkBoxSpanningTree.setBounds(250,5,100,20);
-        radioButton1.setBounds(350,5,80,20);
-        radioButton2.setBounds(440,5,100,20);
-        newUser.setBounds(1170, 60, 100, 20);
-        newUserLabel.setBounds(1170, 45, 100, 12);
-        addButton.setBounds(1300, 60, 100, 20);
-        layeredPane.setBounds(1,95, 1400, 700);
+        label1.setBounds(25, 45, 80, 10);
+        label2.setBounds(50, 57, 80, 10);
+        input.setBounds(110, 30, 450, 50);
         input.setFont(new Font("Dialog", Font.PLAIN, 14));
+        buildButton.setBounds(580, 30, 100, 50);
+        checkBoxNonFriends.setBounds(120, 5, 130, 20);
+        checkBoxSpanningTree.setBounds(250, 5, 100, 20);
+        radioButton1.setBounds(350, 5, 80, 20);
+        radioButton2.setBounds(440, 5, 100, 20);
+        newUser.setBounds(0, 755, 100, 20);
+        addButton.setBounds(0, 775, 100, 20);
+        layeredPane.setBounds(100, 95, 1400, 700);
+        newUser.setEditable(false);
     }
-    private void addAllForms(){
+
+    private void addAllForms() {
         Container container = this.getContentPane();
         container.setLayout(null);
         container.add(radioButton1);
@@ -125,8 +133,17 @@ public class VkGui extends JFrame {
         container.add(infoButton);
         container.add(layeredPane);
     }
+
+    private File fileDialog() {
+        int returnVal = chosenFile.showDialog(this, "Открыть файл");
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            return chosenFile.getSelectedFile();
+        }
+        return null;
+    }
+
     @Override
-    public JLayeredPane getLayeredPane(){
+    public JLayeredPane getLayeredPane() {
         return layeredPane;
     }
 }
