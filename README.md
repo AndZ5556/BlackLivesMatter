@@ -1,4 +1,4 @@
-# BlackLivesMatter
+# VK-Clique
 Luxury_Genius_Black_Team friendly repository. 
 
 Задание на практику:
